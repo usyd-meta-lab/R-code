@@ -58,9 +58,12 @@ meta_measures <- function(n_conf = 6){
     # Print frequencies
     meta_values <- meta_d_table(mydata[mydata$participant_id == i,], n_conf = n_conf)
     
+    
+    
     # Save values
     df[df$participant_id == i, "d"] <- meta_values$d
     df[df$participant_id == i, "meta_d"] <- meta_values$meta_d
+    df[df$participant_id == i, "mean_conf"] <-mean(mydata[mydata$participant_id == i,"confidence"], na.rm = T)
     
     
   }, error = function(e) {
