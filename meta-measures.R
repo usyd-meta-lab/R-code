@@ -35,6 +35,12 @@ meta_d_table <- function(data, n_conf = 6){
   
   print(sorted_df_nr_s2)
   
-  return(list(nr_s1 = sorted_df_nr_s1$Freq, nr_s2 = sorted_df_nr_s2$Freq ))
+  
+  fit <- fit_meta_d_MLE(sorted_df_nr_s1$Freq, sorted_df_nr_s2$Freq)
+  print(fit)
+  return(list(participant_id = data[1,"participant_id"], nr_s1 = sorted_df_nr_s1$Freq, nr_s2 = sorted_df_nr_s2$Freq, d = fit$da[1], meta_d = fit$meta_da[1] ))
   
 }
+
+
+
