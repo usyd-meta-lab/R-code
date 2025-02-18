@@ -47,7 +47,7 @@ meta_d_table <- function(data, n_conf, verbose = F){
 # FUNCTION -----------------
 meta_measures <- function(n_conf = 6){
   df <- data.frame(participant_id = unique(mydata$participant_id))
-  
+  require(metaSDT)
   
   for (i in df$participant_id) {
   tryCatch({
