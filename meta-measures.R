@@ -48,7 +48,9 @@ meta_d_table <- function(data, n_conf, verbose = F){
 meta_measures <- function(n_conf = 6){
   df <- data.frame(participant_id = unique(mydata$participant_id))
   
-  for(i in df$participant_id){
+  
+  for (i in df$participant_id) {
+  tryCatch({
     
     # Print information  
     print(paste("Computing meta-d' for", i))
@@ -59,9 +61,18 @@ meta_measures <- function(n_conf = 6){
     # Save values
     df[df$participant_id == i, "d"] <- meta_values$d
     df[df$participant_id == i, "meta_d"] <- meta_values$meta_d
+    
+    
+  }, error = function(e) {
+    print(paste("Error at iteration", i, ":", e$message))  # Handle error
+  })
   }
+  
+  
+  
   return(df)
 }
+
 
 
 # Example
