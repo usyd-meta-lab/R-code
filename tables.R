@@ -2,11 +2,13 @@
 if (!require("Hmisc")) install.packages("Hmisc")
 if (!require("knitr")) install.packages("knitr")
 if (!require("kableExtra")) install.packages("kableExtra")
+if (!require("dplyr")) install.packages("dplyr")
 
 # Load libraries
 library(Hmisc)
 library(knitr)
 library(kableExtra)
+library(dplyr)
 
 # Function to create APA-style correlation table with descriptive statistics
 create_correlation_table <- function(data) {
