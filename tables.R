@@ -156,3 +156,91 @@ calculate_group_descriptives <- function(data, vars, group_var) {
 # vars_to_analyze <- c("age", "height", "weight")
 # results_table <- calculate_group_descriptives(my_data, vars_to_analyze, "group")
 # print(results_table)
+
+
+
+
+
+
+independent_t_test_apa <- function(formula, data, var.equal = TRUE) {
+  # Create a model frame from the formula and data
+  mf <- model.frame(formula, data = data)
+  
+  # Check that the model frame has exactly 2 columns: outcome and grouping variable
+  if (ncol(mf) != 2) {
+    stop("The formula should be of the form 'outcome ~ group'")
+  }
+  
+  # Extract outcome and group; ensure group is a factor
+  outcome <- mf[[1]]
+  group <- mf[[2]]
+  if (!is.factor(group)) {
+    group <- factor(group)
+  }
+  
+  # Ensure there are exactly 2 groups
+  if (length(levels(group)) != 2) {
+    stop("The grouping variable must have exactly two levels.")
+  }
+  
+  # Split the outcome variable by group
+  split_data <- split(outcome, group)
+  group1 <- split_data[[1]]
+  group2 <- split_data[[2]]
+  
+  # Calculate means and standard deviations for each group
+  mean1 <- mean(group1, na.rm = TRUE)
+  mean2 <- mean(group2, na.rm = TRUE)
+  sd1 <- sd(group1, na.rm = TRUE)
+  sd2 <- sd(group2, na.rm = TRUE)
+  
+  # Perform the t-test using the formula interface
+  ttest <- t.test(formula, data = data, var.equal = var.equal)
+  t_stat <- ttest$statistic
+  p_value <- ttest$p.value
+  df_val <- ttest$parameter
+  
+  # Compute Cohen's d
+  if (var.equal) {
+    n1 <- length(group1)
+    n2 <- length(group2)
+    pooled_sd <- sqrt(((n1 - 1) * sd1^2 + (n2 - 1) * sd2^2) / (n1 + n2 - 2))
+    cohen_d <- (mean1 - mean2) / pooled_sd
+  } else {
+    # When variances are not assumed equal, one common approach is to average the variances
+    cohen_d <- (mean1 - mean2) / sqrt((sd1^2 + sd2^2) / 2)
+  }
+  
+  # Format the p-value for APA reporting
+  if (p_value < .001) {
+    p_str <- "< .001"
+  } else {
+    p_str <- paste0("= ", format(round(p_value, 3), nsmall = 3))
+  }
+  
+  # Format degrees of freedom: round if Welch's test is used
+  if (var.equal) {
+    df_str <- as.character(df_val)
+  } else {
+    df_str <- as.character(round(df_val, 2))
+  }
+  
+  # Determine wording based on significance
+  significance <- ifelse(p_value < 0.05, "significantly", "non-significantly")
+  
+  # Create an APA formatted result string (rounding values for clarity)
+  result_str <- sprintf("An independent-samples t-test was conducted to compare the groups. %s (M = %.2f, SD = %.2f) and %s (M = %.2f, SD = %.2f) differed %s, t(%s) = %.2f, p %s, Cohen's d = %.2f.",
+                        levels(group)[1], mean1, sd1,
+                        levels(group)[2], mean2, sd2,
+                        significance,
+                        df_str, t_stat, p_str, cohen_d)
+  
+  return(result_str)
+}
+
+
+# Example Usage
+
+# Run the function using a formula
+# result <- independent_t_test_apa(score ~ group, data = mydata, var.equal = TRUE)
+# cat(result)
